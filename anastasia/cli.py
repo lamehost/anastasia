@@ -111,7 +111,9 @@ def main():
         current_app.config['client_ids'] = config['client_ids']
 
     anastasia.run(
-        debug=True
+        debug=True,
+        host=config['host'],
+        port=config['port']
     )
 
 

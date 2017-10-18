@@ -34,5 +34,7 @@ def get_config(filename):
 
 DEFAULT_CONFIG = {
     'client_ids': [False],
-    'folder': 'images/'
+    'folder': 'images/',
+    'host': 'localhost',
+    'port': 8080
 }
