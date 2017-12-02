@@ -36,7 +36,7 @@ class ServiceUnavailable(APIException):
         self.status_code = 503
         self.detail = detail
 
-@anastasia.route("/1/image/<name>", methods=['GET'])
+@anastasia.route("/1/image/<name>", methods=['GET', 'DELETE'])
 @anastasia.route("/1/image", methods=['POST'], defaults={'name': None})
 def image(name):
     if request.method == 'POST':
@@ -70,14 +70,30 @@ def image(name):
         # Return result
         return {
             'data': {
+                'deletehash': name,
                 'link': url_for('image', name=name, _external=True)
-            }
+            },
+            "success": True,
+            "status": 200
+        }
+    elif request.method == 'DELETE':
+        filename = os.path.join(anastasia.config['folder'], name)
+        if not os.path.isabs(filename):
+            filename = os.path.join(os.getcwd(), filename)
+        try:
+            os.unlink(filename)
+        except IOError:
+            raise NotFound('Unable to delete the specified resource')
+
+        return {
+            "data"    : True,
+            "status"  : 200,
+            "success" : True
         }
     else:
         filename = os.path.join(anastasia.config['folder'], name)
         if not os.path.isabs(filename):
             filename = os.path.join(os.getcwd(), filename)
-        print filename
 
         mime = magic.Magic(mime=True)
         try:
