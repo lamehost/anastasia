@@ -119,7 +119,7 @@ def main():
     config = {}
     try:
         config = get_config(args.config)
-    except IOError, error:
+    except (IOError) as error:
         sys.exit(error)
 
     with anastasia.app_context():
