@@ -1,6 +1,5 @@
 import uuid
 from setuptools import setup,find_packages
-from pip.req import parse_requirements
 import codecs
 
 import anastasia as this_package
@@ -11,8 +10,8 @@ here = abspath(dirname(__file__))
 with codecs.open(join(here, 'README.md'), encoding='utf-8') as f:
     README = f.read()
 
-install_reqs = parse_requirements('requirements.txt', session=uuid.uuid1())
-reqs = [str(ir.req) for ir in install_reqs]
+with open('requirements.txt') as file:
+	reqs = [line.strip() for line in file if line and not line.startswith("#")]
 
 setup(
 	name=this_package.__name__,
