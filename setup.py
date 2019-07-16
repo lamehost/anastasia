@@ -25,7 +25,7 @@ setup(
 	include_package_data=True,
 	entry_points={
 		'console_scripts': [
-			'anastasia = anastasia.cli:main',
+			'anastasia = anastasia.__main__:main',
 		],
 	},
 	long_description=README,
