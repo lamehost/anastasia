@@ -4,8 +4,12 @@ properties:
     client_ids:
         type: array
         items:
-            description: Allowed client IDs
+            examples:
+                - 1234
+                - marco
+                - fj02f20h32
             type: string
+        description: Allowed client IDs
     folder:
         type: string
         default : "images/"
