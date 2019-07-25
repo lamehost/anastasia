@@ -151,7 +151,7 @@ def get_config(configuration_filename, schema_filename='config.yml', lower_keys=
     if os.path.exists(configuration_filename):
         with open(configuration_filename, 'r') as stream:
             defaults = get_defaults(configschema)
-            config = yaml.load(stream)
+            config = yaml.load(stream, Loader=yaml.FullLoader)
             config = updatedict(defaults, config)
             if lower_keys:
                 config = keys_to_lower(config)
