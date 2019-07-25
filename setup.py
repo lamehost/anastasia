@@ -1,32 +1,39 @@
-import uuid
-from setuptools import setup,find_packages
 import codecs
 
-import anastasia as this_package
-
 from os.path import abspath, dirname, join
-here = abspath(dirname(__file__))
+from setuptools import setup
 
-with codecs.open(join(here, 'README.md'), encoding='utf-8') as f:
-    README = f.read()
+NAME = 'anastasia'
+HERE = abspath(dirname(__file__))
+
+ABOUT = dict()
+with open(join(NAME, '__about__.py')) as _:
+    exec(_.read(), ABOUT)
+
+HERE = abspath(dirname(__file__))
+with codecs.open(join(HERE, 'README.md'), encoding='utf-8') as _:
+    README = _.read()
 
 with open('requirements.txt') as file:
-	reqs = [line.strip() for line in file if line and not line.startswith("#")]
+    REQS = [line.strip() for line in file if line and not line.startswith("#")]
 
 setup(
-	name=this_package.__name__,
-	author=this_package.__author__,
-	author_email=this_package.__author_email__,
-	url=this_package.__url__,
-	version=this_package.__version__,
-	packages=[this_package.__name__],
-	install_requires=reqs,
-	include_package_data=True,
-	entry_points={
-		'console_scripts': [
-			'anastasia = anastasia.__main__:main',
-		],
-	},
-	long_description=README,
-	zip_safe=False
+    name=NAME,
+    author=ABOUT['__author__'],
+    author_email=ABOUT['__author_email__'],
+    url=ABOUT['__url__'],
+    version=ABOUT['__version__'],
+    packages=[NAME],
+    package_data={NAME: [
+        '*.yml'
+    ]},
+    install_requires=REQS,
+    include_package_data=True,
+    entry_points={
+        'console_scripts': [
+            '%s = %s.__main__:main' % (NAME, NAME),
+        ],
+    },
+    long_description=README,
+    zip_safe=False
 )
