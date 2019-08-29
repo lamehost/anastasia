@@ -7,8 +7,6 @@ import os
 import random
 import string
 
-import magic
-
 from flask import Flask, abort, request, send_file, url_for
 from flask_restful import Api, Resource
 
@@ -103,15 +101,10 @@ def create_app(config=None):
             if not os.path.isabs(filename):
                 filename = os.path.join(os.getcwd(), filename)
 
-            mime = magic.Magic(mime=True)
-            try:
-                mimetype = mime.from_file(filename)
-            except IOError:
-                abort(404, 'Unable to find the requested image')
+            # To explicitely set mimetype=None tells send_file to guess the type on its own
+            return send_file(filename, mimetype=None)
 
-            return send_file(filename, mimetype=mimetype)
-
-    api.add_resource(NewImage, "/1/image/")
+    api.add_resource(NewImage, "/1/image", "/1/image/")
     api.add_resource(ExistingImage, "/1/image/<string:name>")
 
     return app
