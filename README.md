@@ -1,5 +1,7 @@
 # Anastasia
 
+# EVERYTHING BELOW THIS LINE IS OUTDATED
+
 Antastia is a  **VERY** minimalistic REST interface for image upload that mimics [some of imgur's methods](https://apidocs.imgur.com/#58306db8-0a6f-4aa1-a021-bdad565f153e).
 
 ## Methods
