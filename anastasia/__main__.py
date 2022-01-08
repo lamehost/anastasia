@@ -1,43 +1,30 @@
-# -*- coding: utf-8 -*-
+"""Main entrypoint for the package"""
 
-from __future__ import absolute_import
-from __future__ import print_function
-
-import argparse
-import sys
-
-from werkzeug.serving import run_simple
-
-from anastasia.config import get_config
-from anastasia.webapp import create_app
+import os
+import uvicorn
 
 
 def main():
-    # Parse the arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-c", "--config",
-        metavar="FILE",
-        default="anastasia.cfg",
-        help="configuration filename (default: anastasia.cfg)"
-    )
-    args = parser.parse_args()
+    """
+    Main package function.
 
-    # Read configuration
-    config = {}
-    try:
-        config = get_config(args.config)
-    except (IOError) as error:
-        sys.exit(error)
+    Starts uvicorn and runs `anastasia.create_app()`
+    """
 
-    webapp = create_app(config)
-    run_simple(
-        config['host'],
-        config['port'],
-        webapp,
-        use_reloader=True,
-        use_debugger=True,
-        use_evalex=True
+    # Import config from ENV
+    host = os.getenv('ANASTASIA_HOST', '0.0.0.0')
+    port = int(os.getenv('ANASTASIA_PORT', '8000'))
+    debug = os.getenv('ANASTASIA_DEBUG', None) is not None
+
+    # Launch webapp through uvicorn
+    uvicorn.run(
+        "anastasia:create_app",
+        host=host,
+        port=port,
+        log_level=debug,
+        reload=True,
+        factory=True,
+        server_header=False
     )
 
 

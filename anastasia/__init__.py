@@ -1,13 +1,10 @@
-from __future__ import absolute_import
+"""
+VERY minimalistic imgur-alike app.
+
+Anastasia is a *VERY* minimalistic image upload app that implements some of imgur APIs.
+It offers REST APIs and a simple web interface where you can drag and drop image file for instant
+upload.
+"""
 
 from .webapp import create_app
-
-from .__about__ import (
-    __version__,
-    __author__,
-    __author_email__,
-    __url__,
-    __description__,
-    __license__,
-    __classifiers__
-)
+from . import routers

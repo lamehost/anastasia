@@ -1,39 +1,42 @@
-import codecs
+"""Install package"""
 
+import codecs
+import sys
 from os.path import abspath, dirname, join
 from setuptools import setup
+from setuptools import find_packages
 
-NAME = 'anastasia'
-HERE = abspath(dirname(__file__))
 
 ABOUT = dict()
-with open(join(NAME, '__about__.py')) as _:
+with open("anastasia/__about__.py") as _:
     exec(_.read(), ABOUT)
 
 HERE = abspath(dirname(__file__))
-with codecs.open(join(HERE, 'README.md'), encoding='utf-8') as _:
-    README = _.read()
+with codecs.open(join(HERE, 'README.md'), encoding='utf-8') as f:
+    README = f.read()
 
 with open('requirements.txt') as file:
     REQS = [line.strip() for line in file if line and not line.startswith("#")]
 
 setup(
-    name=NAME,
+    name='anastasia',
     author=ABOUT['__author__'],
     author_email=ABOUT['__author_email__'],
+    description=ABOUT['__description__'],
+    # license=ABOUT['__license__'],
     url=ABOUT['__url__'],
     version=ABOUT['__version__'],
-    packages=[NAME],
-    package_data={NAME: [
-        '*.yml'
-    ]},
+    packages=['anastasia', 'anastasia.routers'],
+    setup_requires=["nose", "coverage", "mock"],
     install_requires=REQS,
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            '%s = %s.__main__:main' % (NAME, NAME),
+            'anastasia = anastasia.__main__:main',
         ],
     },
     long_description=README,
-    zip_safe=False
+    long_description_content_type='text/markdown',
+    zip_safe=False,
+    test_suite='nose.collector'
 )
