@@ -16,7 +16,7 @@ usage: anastasia
 
 ## Configuration
 Configuration is provided in 2 ways depending on the component you want to configure:
- * **API configuration**: Provided via .env file
+ * **API configuration**: Provided via .env file named **anastasia.cfg**
  * **Uvicorn**: Provided via environment variables
 
 ### API configuration directives:
