@@ -3,11 +3,11 @@
 Anastasia is a **VERY** minimalist REST API that mimics [some of imgur's methods](https://apidocs.imgur.com/#de179b6a-3eda-4406-a8d7-1fb06c17cb9c).
 
 ## Methods
-| Methods | Headers | Attibute | Returns |
-|---------|---------|----------|---------|
-| GET | None | image_hash | Image file |
-| DELETE | None | image_hash | None |
-| POST | None | Image file | JSON with meta |
+| Method | Path | Headers | In-Path attibute | Body | Returns |
+|--------|------|---------|------------------|------|---------|
+| GET | /api/3/image/{image_hash} | image_hash | None | Image file |
+| DELETE | /api/3/image/{image_hash} | None | image_hash | None | None |
+| POST | /api/3/upload | None | None | Image file | JSON with meta |
 
 ## Syntax
 ```
@@ -25,6 +25,7 @@ Configuration is provided in 2 ways depending on the component you want to confi
 - **contact_url**: App administrator's website. The value will show up on the swagger GUI
 - **contact_email**: App administrator's email address. The value will show up on the swagger GUI
 - **enable_gui**: If set, enables the webgui at root path.
+- **enable_docs**: If set, enables API docs at `/api/docs/`
 
 #### Sample .env file
 ```

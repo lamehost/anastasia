@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     # Activate GUI
     enable_gui: bool = False
 
+    # Activate API docs
+    enable_docs: bool = False
+
     class Config:
         """Tells pydantic to import ENV from `anastasia.cfg`"""
         env_file = os.getenv('CANDELA_ENV', 'anastasia.cfg')
@@ -62,8 +65,10 @@ def create_app():
     )
 
     # Create API engine
+    docs_url = '/docs' if settings.enable_docs else False
+
     api = FastAPI(
-        docs_url='/docs',
+        docs_url=docs_url,
         contact={
             "name": settings.contact_name,
             "url": settings.contact_url,
