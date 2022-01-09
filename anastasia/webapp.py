@@ -56,7 +56,7 @@ def create_app():
             "email": settings.contact_email
         },
         title="Anastasia",
-        description="VERY minimalistic imgur-alike app",
+        description="VERY minimalist imgur-alike app",
         version=__version__,
         openapi_url=False
     )
@@ -70,7 +70,7 @@ def create_app():
             "email": settings.contact_email
         },
         title="Anastasia",
-        description="VERY minimalistic REST API that mimics some of imgur's methods.",
+        description="VERY minimalist REST API that mimics some of imgur's methods.",
         version=__version__,
         openapi_tags=[
             {
@@ -85,7 +85,7 @@ def create_app():
         servers=[
             {
                 "url": "/api",
-                "description": "VERY minimalistic REST API that mimics some of imgur's methods."
+                "description": "VERY minimalist REST API that mimics some of imgur's methods."
             }
         ],
         responses={
