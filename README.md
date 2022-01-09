@@ -1,47 +1,52 @@
 # Anastasia
 
-# EVERYTHING BELOW THIS LINE IS OUTDATED
-
-Antastia is a  **VERY** minimalistic REST interface for image upload that mimics [some of imgur's methods](https://apidocs.imgur.com/#58306db8-0a6f-4aa1-a021-bdad565f153e).
+Anastasia is a **VERY** minimalist REST API that mimics [some of imgur's methods](https://apidocs.imgur.com/#de179b6a-3eda-4406-a8d7-1fb06c17cb9c).
 
 ## Methods
-| Methods | Headers | Attibute |
-|---------|---------|----------|
-| GET | None | fileName |
-| DELETE | Authorization | fileName |
-| POST | Authorization | fileName |
-
-## Headers
- - Authorization: Client-ID *client_id*
+| Methods | Headers | Attibute | Returns |
+|---------|---------|----------|---------|
+| GET | None | image_hash | Image file |
+| DELETE | None | image_hash | None |
+| POST | None | Image file | JSON with meta |
 
 ## Syntax
 ```
-usage: anastasia [-h] [-c FILE]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -c FILE, --config FILE
-                        configuration filename (default: anastasia.cfg)
+usage: anastasia
 ```
 
 ## Configuration
-Configuration file is YAML based and loaded at startup.
-Default name is *anastasia.cfg* .
+Configuration is provided in 2 ways depending on the component you want to configure:
+ * **API configuration**: Provided via .env file
+ * **Uvicorn**: Provided via environment variables
 
-## Configuration directives
-- client_ids: List of allowed client_id (default: False)
-- folder: Folder where images will be stored (default: *images/*)
-- port: Port to bind to (ignored with WSGI, default: 8000)
-- host: Host to bind to (ignored with WSGI, default: localhost)
+### API configuration directives:
+- **folder**: Path to the folder where images are stored
+- **contact_name**: App administrator's name. The value will show up on the swagger GUI
+- **contact_url**: App administrator's website. The value will show up on the swagger GUI
+- **contact_email**: App administrator's email address. The value will show up on the swagger GUI
+- **enable_gui**: If set, enables the webgui at root path.
 
-### Sample configuration file
+#### Sample .env file
 ```
-client_ids:
- - nf9832fn2f9e
-folder: images/
+# Image folder
+folder=images/
 
-# Ignored with WSGI
-port: 8000
-host: localhost
+# API frontend stuff
+contact_name="Average Joe"
+contact_url="http://www.example.com"
+contact_email="averagejoe@example.com"
+
+# Activate GUI
+# enable_gui=true
 ```
 
+### Uvicorn configuration directives:
+ - **ANASTASIA_HOST**: IP Address to bind to (default: 0.0.0.0)
+ - **ANASTASIA_PORT**: TCP port to bind to (default: 8000)
+ - **ANASTASIA_DEBUG**: If set, turns uvicorn debug on (default: disabled)
+
+## Docker
+In order to run Anastasia within docker you have to mount the .env file and publish the port:
+```
+docker run -it --rm -p 80:8000 -v $(pwd)/anastasia.cfg:/anastasia.cfg  -v $(pwd)/images:/images anastasia
+```
