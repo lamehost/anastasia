@@ -39,6 +39,9 @@ contact_email="averagejoe@example.com"
 
 # Activate GUI
 # enable_gui=true
+
+# Activate API docs
+# enable_docs=true
 ```
 
 ### Uvicorn configuration directives:
