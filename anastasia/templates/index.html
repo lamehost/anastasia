@@ -49,12 +49,14 @@
       event.preventDefault();
       event.stopPropagation();
       $("#urlText").html("");
-      $("#image").click()
+      // Always reset the image input field
+      $("#image").val('');
+      $("#image").click();
     });
 
     $("#image").change(function(event) {
       var files = event.originalEvent.srcElement.files;
-      uploadFile(files[0])
+      uploadFile(files[0]);
     });
 
     $("#uploadBox").on("dragover", function(event) {
