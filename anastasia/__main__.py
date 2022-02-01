@@ -24,7 +24,8 @@ def main():
         log_level=debug,
         reload=True,
         factory=True,
-        server_header=False
+        server_header=False,
+        proxy_headers=True
     )
 
 
