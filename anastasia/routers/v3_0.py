@@ -10,7 +10,6 @@ import mimetypes
 import string
 import random
 from typing import TypedDict
-from urllib.parse import urljoin
 
 from fastapi import APIRouter, HTTPException, Query, File, UploadFile, Request
 from fastapi.responses import FileResponse
@@ -71,7 +70,7 @@ def get_api(folder: str, baseurl: str = ""):
     ---------
     folder: str
       Folder where files are stored
-    baseurl: str or bool
+    baseurl: str
       Base URL used to build the link to the image after upload. Empty string means "guess"
 
     Returns:
@@ -150,7 +149,9 @@ def get_api(folder: str, baseurl: str = ""):
 
         if baseurl:
             url_path = api.url_path_for("get_image", **{"image_hash": image_hash})
-            link = urljoin(baseurl, url_path)
+            while url_path.startswith('/'):
+                url_path = url_path[1:]
+            link = f"{baseurl}{url_path}"
         else:
             link = request.url_for("get_image", **{"image_hash": image_hash})
 

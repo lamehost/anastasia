@@ -39,16 +39,21 @@ class Settings(BaseSettings):
         env_file = os.getenv('ANASTASIA_ENV', 'anastasia.cfg')
         env_file_encoding = 'utf-8'
 
-def create_app():
+def create_app(api_mount_point: str ='/api/'):
     """
     FastAPI app factory.
 
     Parses configuration from `anastasia.cfg` and returns a FastAPI instance that you can run
     via uvicorn.
 
+    Parameters:
+    ----------
+    api_mount_point: str
+     Path the API will be mounted on. (Default: '/api/')
+
     Returns:
     --------
-       Fastapi: FastAPI app instance
+    Fastapi: FastAPI app instance
     """
     # Read settings
     settings = Settings()
@@ -101,12 +106,19 @@ def create_app():
         }
     )
 
+    # Consruct baseurl
+    baseurl = settings.baseurl
+    if settings.baseurl:
+        while baseurl.endswith('/'):
+            baseurl = baseurl[:-1]
+        baseurl = f"{baseurl}{api_mount_point}"
+        if not baseurl.endswith('/'):
+            baseurl = f"{baseurl}/"
+
     # Import API versions
     api.include_router(
-        v3_0.get_api(settings.folder, settings.baseurl)
+        v3_0.get_api(settings.folder, baseurl)
     )
-
-
 
     # Add custom headers as recommended by https://github.com/shieldfy/API-Security-Checklist#output
     @api.middleware("http")
@@ -123,7 +135,7 @@ def create_app():
         return response
 
     # Add API engine to webapp
-    webapp.mount('/api/', api)
+    webapp.mount(api_mount_point, api)
 
     if settings.enable_gui:
         # Add HTML frontend to webapp
