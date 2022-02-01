@@ -31,9 +31,12 @@ class Settings(BaseSettings):
     # Activate API docs
     enable_docs: bool = False
 
+    # Base URL for response
+    baseurl: str = ""
+
     class Config:
         """Tells pydantic to import ENV from `anastasia.cfg`"""
-        env_file = os.getenv('CANDELA_ENV', 'anastasia.cfg')
+        env_file = os.getenv('ANASTASIA_ENV', 'anastasia.cfg')
         env_file_encoding = 'utf-8'
 
 def create_app():
@@ -100,7 +103,7 @@ def create_app():
 
     # Import API versions
     api.include_router(
-        v3_0.get_api(settings.folder)
+        v3_0.get_api(settings.folder, settings.baseurl)
     )
 
 

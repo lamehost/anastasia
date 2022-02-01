@@ -10,6 +10,7 @@ import mimetypes
 import string
 import random
 from typing import TypedDict
+from urllib.parse import urljoin
 
 from fastapi import APIRouter, HTTPException, Query, File, UploadFile, Request
 from fastapi.responses import FileResponse
@@ -59,7 +60,7 @@ def random_string(length: int = 8):
     )
 
 
-def get_api(folder: str):
+def get_api(folder: str, baseurl: str = ""):
     """
     APIRouter factory for API v3.0
 
@@ -70,6 +71,8 @@ def get_api(folder: str):
     ---------
     folder: str
       Folder where files are stored
+    baseurl: str or bool
+      Base URL used to build the link to the image after upload. Empty string means "guess"
 
     Returns:
     --------
@@ -121,6 +124,7 @@ def get_api(folder: str):
         Upload Image.
 
         Receives the image, saves it and returns a dict with the metadata.
+        The link that points back to the URL is either based on `baseurl` or guessed via url_for.
 
         Arguments:
         ----------
@@ -144,6 +148,12 @@ def get_api(folder: str):
         file_path = os.path.join(folder, image_hash)
         data = await image.read()
 
+        if baseurl:
+            url_path = api.url_path_for("get_image", **{"image_hash": image_hash})
+            link = urljoin(baseurl, url_path)
+        else:
+            link = request.url_for("get_image", **{"image_hash": image_hash})
+
         try:
             with open(file_path, "wb") as file:
                 file.write(data)
@@ -154,7 +164,7 @@ def get_api(folder: str):
         return {
             "data": {
                 "deletehash": image_hash,
-                "link": request.url_for("get_image", **{"image_hash": image_hash})
+                "link": link
             },
             "success": True,
             "status": 200
