@@ -42,12 +42,16 @@ contact_email="averagejoe@example.com"
 
 # Activate API docs
 # enable_docs=true
+
+# Baseurl for API response (usefull in case your app is behind a load balancer)
+# baseurl="https://www.example.com/"
 ```
 
 ### Uvicorn configuration directives:
  - **ANASTASIA_HOST**: IP Address to bind to (default: 0.0.0.0)
  - **ANASTASIA_PORT**: TCP port to bind to (default: 8000)
  - **ANASTASIA_DEBUG**: If set, turns uvicorn debug on (default: disabled)
+ - **ANASTASIA_ENV**: Environment configuration file for Anastasia (see above)
 
 ## Docker
 In order to run Anastasia within docker you have to mount the .env file and publish the port:
