@@ -16,13 +16,20 @@ def main():
     port = int(os.getenv('ANASTASIA_PORT', '8000'))
     debug = os.getenv('ANASTASIA_DEBUG', None) is not None
 
+    if debug:
+        reload = True
+        log_level = "debug"
+    else:
+        reload = False
+        log_level = "debug"
+
     # Launch webapp through uvicorn
     uvicorn.run(
         "anastasia:create_app",
         host=host,
         port=port,
-        log_level=debug,
-        reload=True,
+        log_level=log_level,
+        reload=reload,
         factory=True,
         server_header=False,
         proxy_headers=True
