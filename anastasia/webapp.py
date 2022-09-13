@@ -7,6 +7,7 @@ for the application.
 
 import os
 from typing import Callable
+from pathlib import Path
 
 from fastapi import FastAPI, Request #, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -114,6 +115,9 @@ def create_app(api_mount_point: str ='/api/'):
         baseurl = f"{baseurl}{api_mount_point}"
         if not baseurl.endswith('/'):
             baseurl = f"{baseurl}/"
+
+    # Create folder
+    Path(settings.folder).mkdir(parents=True, exist_ok=True)
 
     # Import API versions
     api.include_router(
