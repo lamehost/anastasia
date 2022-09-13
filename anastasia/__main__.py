@@ -13,7 +13,7 @@ def main():
 
     # Import config from ENV
     host = os.getenv('ANASTASIA_HOST', '0.0.0.0')
-    port = int(os.getenv('ANASTASIA_PORT', '8000'))
+    port = int(os.getenv('ANASTASIA_PORT', '8080'))
     debug = os.getenv('ANASTASIA_DEBUG', None) is not None
 
     if debug:
