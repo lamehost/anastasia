@@ -20,7 +20,7 @@
           <i id="uploadIcon" class="bi bi-cloud-arrow-up display-1 text-primary"></i>
         </div>
         <div class="text mb-2">
-          Drag an image here
+          Paste or drag an image here
         </div>
       </div>
     </div>
@@ -82,6 +82,13 @@
 
       var files = event.originalEvent.dataTransfer.files;
       uploadFile(files[0]);
+    });
+
+    $(document).on('paste', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        file = event.originalEvent.clipboardData.files[0]
+        uploadFile(file)
     });
 
     function uploadFile(file) {
