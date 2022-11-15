@@ -35,7 +35,7 @@ class Settings(BaseSettings):
 
     # Activate GUI
     enable_gui: bool = False
-    minimal_gui: bool = False
+    dadjokes_gui: bool = False
 
     # Activate API docs
     enable_docs: bool = False
@@ -152,8 +152,8 @@ def create_app(api_mount_point: str ='/api/'):
     if settings.enable_gui:
         # Add HTML frontend to webapp
         app_directory = os.path.dirname(os.path.realpath(__file__))
-        if settings.minimal_gui:
-            static_directory = os.path.join(app_directory, 'templates', 'minimal')
+        if settings.dadjokes_gui:
+            static_directory = os.path.join(app_directory, 'templates', 'dadjokes')
         else:
             static_directory = os.path.join(app_directory, 'templates', 'regular')
         webapp.mount("/", StaticFiles(directory=static_directory, html = True), name="templates")
