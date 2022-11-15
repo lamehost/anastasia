@@ -5,6 +5,13 @@ This module provies `create_app` which is a FastAPI app factory that provide API
 for the application.
 """
 
+#
+# Models lack the minimum amount of public methods
+# Also pydantic very often raises no-name-in-module
+#
+# pylint: disable=too-few-public-methods, no-name-in-module
+
+
 import os
 from typing import Callable
 from pathlib import Path
