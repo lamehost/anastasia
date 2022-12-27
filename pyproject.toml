@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "anastasia"}]
 
 [tool.poetry.dependencies]
-python = "^3.8.1"
+python = "^3.9"
 uvicorn = "^0.16.0"
 fastapi = "^0.70.1"
 python-dotenv = "^0.19.2"
