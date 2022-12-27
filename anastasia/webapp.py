@@ -1,17 +1,17 @@
 # MIT License
-# 
+#
 # Copyright (c) 2022, Marco Marzetti <marco@lamehost.it>
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# 
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,7 +43,9 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseSettings, EmailStr
 
 from anastasia.routers import v3_0
-from anastasia.__about__ import __version__
+
+
+VERSION = "1.0.2"
 
 
 class Settings(BaseSettings):
@@ -72,7 +74,7 @@ class Settings(BaseSettings):
         env_file_encoding = 'utf-8'
 
 
-def create_app(api_mount_point: str = '/api/'):
+def create_app(api_mount_point: str = '/api/', settings: dict = False):
     """
     FastAPI app factory.
 
@@ -82,42 +84,46 @@ def create_app(api_mount_point: str = '/api/'):
     Parameters:
     ----------
     api_mount_point: str
-     Path the API will be mounted on. (Default: '/api/')
+        Path the API will be mounted on. (Default: '/api/')
+    settings: dict
+        App configuration settings. If False, get from configuration file.
+        Default: False
 
     Returns:
     --------
     Fastapi: FastAPI app instance
     """
     # Read settings
-    settings = Settings()
+    if not settings:
+        settings = Settings().dict()
 
     # Create root webapp
     webapp = FastAPI(
         docs_url=False,
         contact={
-            "name": settings.contact_name,
-            "url": settings.contact_url,
-            "email": settings.contact_email
+            "name": settings['contact_name'],
+            "url": settings['contact_url'],
+            "email": settings['contact_email']
         },
         title="Anastasia",
         description="VERY minimalist imgur-alike app",
-        version=__version__,
+        version=VERSION,
         openapi_url=False
     )
 
     # Create API engine
-    docs_url = '/docs' if settings.enable_docs else False
+    docs_url = '/docs' if settings['enable_docs'] else False
 
     api = FastAPI(
         docs_url=docs_url,
         contact={
-            "name": settings.contact_name,
-            "url": settings.contact_url,
-            "email": settings.contact_email
+            "name": settings['contact_name'],
+            "url": settings['contact_url'],
+            "email": settings['contact_email']
         },
         title="Anastasia",
         description="VERY minimalist REST API that mimics some of imgur's methods.", # pylint: disable=line-too-long # noqa
-        version=__version__,
+        version=VERSION,
         openapi_tags=[
             {
                 "name": "Images",
@@ -140,8 +146,8 @@ def create_app(api_mount_point: str = '/api/'):
     )
 
     # Consruct baseurl
-    baseurl = settings.baseurl
-    if settings.baseurl:
+    baseurl = settings['baseurl']
+    if settings['baseurl']:
         while baseurl.endswith('/'):
             baseurl = baseurl[:-1]
         baseurl = f"{baseurl}{api_mount_point}"
@@ -149,11 +155,11 @@ def create_app(api_mount_point: str = '/api/'):
             baseurl = f"{baseurl}/"
 
     # Create folder
-    Path(settings.folder).mkdir(parents=True, exist_ok=True)
+    Path(settings['folder']).mkdir(parents=True, exist_ok=True)
 
     # Import API versions
     api.include_router(
-        v3_0.get_api(settings.folder, baseurl)
+        v3_0.get_api(settings['folder'], baseurl)
     )
 
     # Add custom headers as recommended by
@@ -175,10 +181,10 @@ def create_app(api_mount_point: str = '/api/'):
     # Add API engine to webapp
     webapp.mount(api_mount_point, api)
 
-    if settings.enable_gui:
+    if settings['enable_gui']:
         # Add HTML frontend to webapp
         app_directory = os.path.dirname(os.path.realpath(__file__))
-        if settings.dadjokes_gui:
+        if settings['dadjokes_gui']:
             static_directory = os.path.join(
                 app_directory, 'templates', 'dadjokes'
             )

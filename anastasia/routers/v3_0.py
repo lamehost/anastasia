@@ -117,6 +117,11 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
     @api.get(
         "/image/{image_hash}",
         response_class=FileResponse,
+        responses={
+            200: {"description": "Image retunerd"},
+            404: {"description": "Image does not exist"},
+            503: {"description": "Transient error"}
+        },
         description="Returns image identified by `image_hash`"
     )
     async def get_image(image_hash: str = IMAGEHASH) -> str:
@@ -135,12 +140,20 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
         --------
         str: Image file path
         """
-        return os.path.join(folder, image_hash)
+        filename = os.path.join(folder, image_hash)
+        if not os.path.exists(filename):
+            raise HTTPException(
+                status_code=404,
+                detail=f"Unable to find image: {image_hash}"
+            )
+
+        return filename
 
     @api.post(
         "/upload",
         response_model=UploadImageSchema,
         responses={
+            200: {"description": "Image created"},
             400: {"description": "Bad request"},
             503: {"description": "Transient error"}
         },
@@ -212,6 +225,7 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
         "/image/{image_hash}",
         status_code=204,
         responses={
+            204: {"description": "Image deleted"},
             404: {"description": "Not Found"},
             503: {"description": "Transient error"}
         },
@@ -229,13 +243,13 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
           Image name
         """
 
-        file_path = os.path.join(folder, image_hash)
+        filename = os.path.join(folder, image_hash)
 
-        if not os.path.exists(file_path):
+        if not os.path.exists(filename):
             raise HTTPException(status_code=404, detail='Image does not exist')
 
         try:
-            os.unlink(file_path)
+            os.unlink(filename)
         except IOError as error:
             raise HTTPException(
                 status_code=503,
