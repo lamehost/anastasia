@@ -1,8 +1,30 @@
+# MIT License
+# 
+# Copyright (c) 2022, Marco Marzetti <marco@lamehost.it>
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 FastAPI app.
 
-This module provies `create_app` which is a FastAPI app factory that provide API and web frontends
-for the application.
+This module provies `create_app` which is a FastAPI app factory that provide
+API and web frontend for the application.
 """
 
 #
@@ -16,12 +38,13 @@ import os
 from typing import Callable
 from pathlib import Path
 
-from fastapi import FastAPI, Request #, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseSettings, EmailStr
 
 from anastasia.routers import v3_0
 from anastasia.__about__ import __version__
+
 
 class Settings(BaseSettings):
     """App configuration schema"""
@@ -48,12 +71,13 @@ class Settings(BaseSettings):
         env_file = os.getenv('ANASTASIA_ENV', 'anastasia.cfg')
         env_file_encoding = 'utf-8'
 
-def create_app(api_mount_point: str ='/api/'):
+
+def create_app(api_mount_point: str = '/api/'):
     """
     FastAPI app factory.
 
-    Parses configuration from `anastasia.cfg` and returns a FastAPI instance that you can run
-    via uvicorn.
+    Parses configuration from `anastasia.cfg` and returns a FastAPI instance
+    that you can run via uvicorn.
 
     Parameters:
     ----------
@@ -92,7 +116,7 @@ def create_app(api_mount_point: str ='/api/'):
             "email": settings.contact_email
         },
         title="Anastasia",
-        description="VERY minimalist REST API that mimics some of imgur's methods.",
+        description="VERY minimalist REST API that mimics some of imgur's methods.", # pylint: disable=line-too-long # noqa
         version=__version__,
         openapi_tags=[
             {
@@ -100,14 +124,14 @@ def create_app(api_mount_point: str ='/api/'):
                 "description": "Add/Remove images",
                 "externalDocs": {
                     "description": "README",
-                    "url": "https://github.com/lamehost/anastasia/blob/master/README.md",
+                    "url": "https://github.com/lamehost/anastasia/blob/master/README.md",  # pylint: disable=line-too-long # noqa
                 },
             },
         ],
         servers=[
             {
                 "url": "/api",
-                "description": "VERY minimalist REST API that mimics some of imgur's methods."
+                "description": "VERY minimalist REST API that mimics some of imgur's methods."  # pylint: disable=line-too-long # noqa
             }
         ],
         responses={
@@ -132,7 +156,8 @@ def create_app(api_mount_point: str ='/api/'):
         v3_0.get_api(settings.folder, baseurl)
     )
 
-    # Add custom headers as recommended by https://github.com/shieldfy/API-Security-Checklist#output
+    # Add custom headers as recommended by
+    # https://github.com/shieldfy/API-Security-Checklist#output
     @api.middleware("http")
     async def add_custom_headers(request: Request, call_next: Callable):
         response = await call_next(request)
@@ -141,7 +166,8 @@ def create_app(api_mount_point: str ='/api/'):
         # Force restrictive content-security-policy for JSON content
         try:
             if response.headers['content-type'] == 'application/json':
-                response.headers["Content-Security-Policy"] = "default-src 'none'"
+                response.headers["Content-Security-Policy"] = \
+                    "default-src 'none'"
         except KeyError:
             pass
         return response
@@ -153,9 +179,17 @@ def create_app(api_mount_point: str ='/api/'):
         # Add HTML frontend to webapp
         app_directory = os.path.dirname(os.path.realpath(__file__))
         if settings.dadjokes_gui:
-            static_directory = os.path.join(app_directory, 'templates', 'dadjokes')
+            static_directory = os.path.join(
+                app_directory, 'templates', 'dadjokes'
+            )
         else:
-            static_directory = os.path.join(app_directory, 'templates', 'regular')
-        webapp.mount("/", StaticFiles(directory=static_directory, html = True), name="templates")
+            static_directory = os.path.join(
+                app_directory, 'templates', 'regular'
+            )
+        webapp.mount(
+            "/",
+            StaticFiles(directory=static_directory, html=True),
+            name="templates"
+        )
 
     return webapp

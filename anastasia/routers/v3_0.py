@@ -1,8 +1,30 @@
+# MIT License
+#
+# Copyright (c) 2022, Marco Marzetti <marco@lamehost.it>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 APIRouter dor API v3.0
 
-This module provies `get_api` which is a FastAPI app factory that provide the APIrouter that
-implements API v3.0
+This module provies `get_api` which is a FastAPI app factory that provide the
+APIrouter that implements API v3.0
 """
 
 import os
@@ -25,11 +47,13 @@ IMAGEHASH = Query(
     max_length=64
 )
 
+
 # Response Schemas
 class UploadImageDataFieldSchema(TypedDict, total=True):
     """Defines the `data` field of the `UploadImageSchema` schema"""
     deletehash: str = Field(min_length=1, max_length=64)
     link: AnyHttpUrl
+
 
 class UploadImageSchema(BaseModel):
     """Schema for `upload_image` responses"""
@@ -39,7 +63,7 @@ class UploadImageSchema(BaseModel):
 
 
 # Supporting methods
-def random_string(length: int = 8):
+def random_string(length: int = 8) -> str:
     """
     Returns random string of the given length.
 
@@ -59,19 +83,22 @@ def random_string(length: int = 8):
     )
 
 
-def get_api(folder: str, baseurl: str = ""):
+def get_api(folder: str, baseurl: str = "") -> APIRouter:
     """
     APIRouter factory for API v3.0
 
-    Returns an APIRouter instance for API v3.0 to create, read and delete images via REST.
-    The `folder` argument tells the functions where the image files are located.
+    Returns an APIRouter instance for API v3.0 to create, read and delete
+    images via REST.
+    The `folder` argument tells the functions where the image files are
+    located.
 
     Arguments:
     ---------
     folder: str
       Folder where files are stored
     baseurl: str
-      Base URL used to build the link to the image after upload. Empty string means "guess"
+      Base URL used to build the link to the image after upload. Empty string
+      means "guess"
 
     Returns:
     --------
@@ -92,11 +119,12 @@ def get_api(folder: str, baseurl: str = ""):
         response_class=FileResponse,
         description="Returns image identified by `image_hash`"
     )
-    async def get_image(image_hash: str = IMAGEHASH):
+    async def get_image(image_hash: str = IMAGEHASH) -> str:
         """
         Gets image by `image_hash`
 
-        Returns the path to an image in the the `folder` folder whose name is `image_hash`.
+        Returns the path to an image in the the `folder` folder whose name is
+        `image_hash`.
 
         Arguments:
         ----------
@@ -118,12 +146,16 @@ def get_api(folder: str, baseurl: str = ""):
         },
         description="Upload a new image",
     )
-    async def upload_image(request: Request, image: UploadFile = File(...)):
+    async def upload_image(
+        request: Request,
+        image: UploadFile = File(...)
+    ) -> dict:
         """
         Upload Image.
 
         Receives the image, saves it and returns a dict with the metadata.
-        The link that points back to the URL is either based on `baseurl` or guessed via url_for.
+        The link that points back to the URL is either based on `baseurl` or
+        guessed via url_for.
 
         Arguments:
         ----------
@@ -148,7 +180,9 @@ def get_api(folder: str, baseurl: str = ""):
         data = await image.read()
 
         if baseurl:
-            url_path = api.url_path_for("get_image", **{"image_hash": image_hash})
+            url_path = api.url_path_for(
+                "get_image", **{"image_hash": image_hash}
+            )
             while url_path.startswith('/'):
                 url_path = url_path[1:]
             link = f"{baseurl}{url_path}"
@@ -160,7 +194,10 @@ def get_api(folder: str, baseurl: str = ""):
                 file.write(data)
         except FileNotFoundError as error:
             print(error)
-            raise HTTPException(status_code=503, detail='Unable to upload the image') from error
+            raise HTTPException(
+                status_code=503,
+                detail='Unable to upload the image'
+            ) from error
 
         return {
             "data": {
@@ -180,7 +217,7 @@ def get_api(folder: str, baseurl: str = ""):
         },
         description="Deletes an existing image",
     )
-    async def delete_image(image_hash: str = IMAGEHASH):
+    async def delete_image(image_hash: str = IMAGEHASH) -> None:
         """
         Deletes image by `image_hash`
 
@@ -200,7 +237,9 @@ def get_api(folder: str, baseurl: str = ""):
         try:
             os.unlink(file_path)
         except IOError as error:
-            raise HTTPException(status_code=503, detail='Unable to delete the image') from error
-
+            raise HTTPException(
+                status_code=503,
+                detail='Unable to delete the image'
+            ) from error
 
     return api
