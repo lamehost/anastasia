@@ -1,0 +1,15 @@
+language: python
+
+python:
+  - "3.10"
+
+before_install:
+  - pip install poetry
+
+install:
+  - poetry install
+
+script:
+  - poetry run flake8 anastasia tests
+  - poetry run coverage run -m unittest discover tests -b
+
