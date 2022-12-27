@@ -1,5 +1,0 @@
-include *.md
-include LICENSE
-include requirements.txt
-recursive-include anastasia *.py
-recursive-include anastasia/templates *.html
