@@ -39,10 +39,11 @@ class TestWebApp(unittest.IsolatedAsyncioTestCase):
         async with AsyncClient(
             app=self.app, base_url="http://0.0.0.0:8080/api/3"
         ) as client:
-            response = await client.post(
-                '/upload',
-                files={'image': ('image.gif', open(filename, "rb"))}
-            )
+            with open(filename, "rb") as image:
+                response = await client.post(
+                    '/upload',
+                    files={'image': ('image.gif', image)}
+                )
         self.assertEqual(response.status_code,  200)
         self.assertEqual(response.json()['success'], True)
         filename = response.json()['data']['deletehash']
@@ -77,6 +78,7 @@ class TestWebApp(unittest.IsolatedAsyncioTestCase):
                 f'/image/{filename}'
             )
         self.assertEqual(response.status_code,  404)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
