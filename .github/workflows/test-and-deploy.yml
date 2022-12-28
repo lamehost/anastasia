@@ -10,7 +10,7 @@ env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
 jobs:
-  build:
+  Test:
 
     runs-on: ubuntu-latest
     strategy:
@@ -39,9 +39,9 @@ jobs:
         run: |
           poetry run pytest
 
-  deploy:
+  Deploy:
 
-    needs: build
+    needs: Test
 
     runs-on: ubuntu-latest
 
