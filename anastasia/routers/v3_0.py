@@ -27,36 +27,31 @@ This module provies `get_api` which is a FastAPI app factory that provide the
 APIrouter that implements API v3.0
 """
 
-import os
 import mimetypes
-import string
+import os
 import random
+import string
 from typing import TypedDict
 
-from fastapi import APIRouter, HTTPException, Query, File, UploadFile, Request
+from fastapi import APIRouter, File, HTTPException, Path, Request, UploadFile
 from fastapi.responses import FileResponse
-
-from pydantic import BaseModel, Field, AnyHttpUrl
-
+from pydantic import AnyHttpUrl, BaseModel, Field
 
 # Input Validation
-IMAGEHASH = Query(
-    "",
-    description="Image hash string",
-    min_lentgh=1,
-    max_length=64
-)
+IMAGEHASH = Path(description="Image hash string", min_lentgh=1, max_length=64)
 
 
 # Response Schemas
 class UploadImageDataFieldSchema(TypedDict, total=True):
     """Defines the `data` field of the `UploadImageSchema` schema"""
+
     deletehash: str = Field(min_length=1, max_length=64)
     link: AnyHttpUrl
 
 
 class UploadImageSchema(BaseModel):
     """Schema for `upload_image` responses"""
+
     data: UploadImageDataFieldSchema = None
     success: bool = True
     status: int = 200
@@ -76,10 +71,8 @@ def random_string(length: int = 8) -> str:
     --------
     str: Random string
     """
-    return ''.join(
-        random.SystemRandom().choice(
-            string.ascii_lowercase + string.digits
-        ) for _ in range(length)
+    return "".join(
+        random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(length)
     )
 
 
@@ -104,10 +97,7 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
     --------
     APIRouter: APIRouter instance of API v3.0
     """
-    api = APIRouter(
-        prefix="/3",
-        tags=["Images"]
-    )
+    api = APIRouter(prefix="/3", tags=["Images"])
 
     # All of the methods below inherit `folder` from here
     # Fix relative path
@@ -120,9 +110,9 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
         responses={
             200: {"description": "Image retunerd"},
             404: {"description": "Image does not exist"},
-            503: {"description": "Transient error"}
+            503: {"description": "Transient error"},
         },
-        description="Returns image identified by `image_hash`"
+        description="Returns image identified by `image_hash`",
     )
     async def get_image(image_hash: str = IMAGEHASH) -> str:
         """
@@ -142,10 +132,7 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
         """
         filename = os.path.join(folder, image_hash)
         if not os.path.exists(filename):
-            raise HTTPException(
-                status_code=404,
-                detail=f"Unable to find image: {image_hash}"
-            )
+            raise HTTPException(status_code=404, detail=f"Unable to find image: {image_hash}")
 
         return filename
 
@@ -155,14 +142,11 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
         responses={
             200: {"description": "Image created"},
             400: {"description": "Bad request"},
-            503: {"description": "Transient error"}
+            503: {"description": "Transient error"},
         },
         description="Upload a new image",
     )
-    async def upload_image(
-        request: Request,
-        image: UploadFile = File(...)
-    ) -> dict:
+    async def upload_image(request: Request, image: UploadFile = File(...)) -> dict:
         """
         Upload Image.
 
@@ -183,8 +167,7 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
         """
         if not image.content_type.startswith("image/"):
             raise HTTPException(
-                status_code=400,
-                detail=f"Unsupported content-type: {image.content_type}"
+                status_code=400, detail=f"Unsupported content-type: {image.content_type}"
             )
 
         extension = mimetypes.guess_extension(image.content_type)
@@ -193,10 +176,8 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
         data = await image.read()
 
         if baseurl:
-            url_path = api.url_path_for(
-                "get_image", **{"image_hash": image_hash}
-            )
-            while url_path.startswith('/'):
+            url_path = api.url_path_for("get_image", **{"image_hash": image_hash})
+            while url_path.startswith("/"):
                 url_path = url_path[1:]
             link = f"{baseurl}{url_path}"
         else:
@@ -207,19 +188,9 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
                 file.write(data)
         except FileNotFoundError as error:
             print(error)
-            raise HTTPException(
-                status_code=503,
-                detail='Unable to upload the image'
-            ) from error
+            raise HTTPException(status_code=503, detail="Unable to upload the image") from error
 
-        return {
-            "data": {
-                "deletehash": image_hash,
-                "link": link
-            },
-            "success": True,
-            "status": 200
-        }
+        return {"data": {"deletehash": image_hash, "link": link}, "success": True, "status": 200}
 
     @api.delete(
         "/image/{image_hash}",
@@ -227,7 +198,7 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
         responses={
             204: {"description": "Image deleted"},
             404: {"description": "Not Found"},
-            503: {"description": "Transient error"}
+            503: {"description": "Transient error"},
         },
         description="Deletes an existing image",
     )
@@ -246,14 +217,11 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
         filename = os.path.join(folder, image_hash)
 
         if not os.path.exists(filename):
-            raise HTTPException(status_code=404, detail='Image does not exist')
+            raise HTTPException(status_code=404, detail="Image does not exist")
 
         try:
             os.unlink(filename)
         except IOError as error:
-            raise HTTPException(
-                status_code=503,
-                detail='Unable to delete the image'
-            ) from error
+            raise HTTPException(status_code=503, detail="Unable to delete the image") from error
 
     return api

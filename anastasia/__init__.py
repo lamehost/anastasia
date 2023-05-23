@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2022, Marco Marzetti <marco@lamehost.it>
+# Copyright (c) 2023, Marco Marzetti <marco@lamehost.it>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,7 @@ It offers REST APIs and a simple web interface where you can drag and drop
 image file for instant upload.
 """
 
-from .webapp import create_app
 from .routers import UploadImageSchema
+from .webapp import create_app
 
-__all__ = [
-    'create_app',
-    'UploadImageSchema'
-]
+__all__ = ["create_app", "UploadImageSchema"]

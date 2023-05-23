@@ -20,44 +20,44 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Main entrypoint for the package"""
+#
+# Models lack the minimum amount of public methods
+# Also pydantic very often raises no-name-in-module
+#
+# pylint: disable=too-few-public-methods, no-name-in-module
+
+"""
+This module defines app wide settings
+"""
 
 import os
 
-import uvicorn
+from pydantic import BaseSettings, EmailStr
 
 
-def main() -> None:
-    """
-    Main package function.
+class Settings(BaseSettings):
+    """App configuration schema"""
 
-    Starts uvicorn and runs `anastasia.create_app()`
-    """
+    # Image folder
+    folder: str
 
-    # Import config from ENV
-    host = os.getenv("ANASTASIA_HOST", "0.0.0.0")
-    port = int(os.getenv("ANASTASIA_PORT", "8080"))
-    debug = os.getenv("ANASTASIA_DEBUG", None) is not None
+    # API frontend stuff
+    contact_name: str
+    contact_url: str
+    contact_email: EmailStr
 
-    if debug:
-        reload = True
-        log_level = "debug"
-    else:
-        reload = False
-        log_level = "debug"
+    # Activate GUI
+    enable_gui: bool = False
+    dadjokes_gui: bool = False
 
-    # Launch webapp through uvicorn
-    uvicorn.run(
-        "anastasia:create_app",
-        host=host,
-        port=port,
-        log_level=log_level,
-        reload=reload,
-        factory=True,
-        server_header=False,
-        proxy_headers=True,
-    )
+    # Activate API docs
+    enable_docs: bool = False
 
+    # Base URL for response
+    baseurl: str = ""
 
-if __name__ == "__main__":
-    main()
+    class Config:
+        """Tells pydantic to import ENV from `anastasia.cfg`"""
+
+        env_file = os.getenv("ANASTASIA_ENV", "anastasia.cfg")
+        env_file_encoding = "utf-8"

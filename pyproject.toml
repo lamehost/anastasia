@@ -1,6 +1,14 @@
+[tool.isort]
+profile = "black"
+skip = "gobgp_bindings"
+
+[tool.black]
+line-length = 100
+exclude = "gobgp_bindings"
+
 [tool.poetry]
 name = "anastasia"
-version = "1.0.2"
+version = "1.0.3"
 description = ""
 authors = ["Marco Marzetti <marco@lamehost.it>"]
 readme = "README.md"
@@ -14,6 +22,7 @@ python-dotenv = "^0.19.2"
 email-validator = "^1.1.3"
 python-multipart = "^0.0.5"
 pytest = "^7.2.0"
+black = "^23.3.0"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^2.15.9"

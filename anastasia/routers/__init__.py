@@ -27,9 +27,6 @@ This module provides all of the API versions supported by the package as
 APIRouter factory
 """
 
-from .v3_0 import get_api, UploadImageSchema
+from .v3_0 import UploadImageSchema, get_api
 
-__all__ = [
-    'get_api',
-    'UploadImageSchema'
-]
+__all__ = ["get_api", "UploadImageSchema"]
