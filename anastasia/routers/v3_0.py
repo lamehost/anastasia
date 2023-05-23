@@ -187,10 +187,13 @@ def get_api(folder: str, baseurl: str = "") -> APIRouter:
             with open(file_path, "wb") as file:
                 file.write(data)
         except FileNotFoundError as error:
-            print(error)
             raise HTTPException(status_code=503, detail="Unable to upload the image") from error
 
-        return {"data": {"deletehash": image_hash, "link": link}, "success": True, "status": 200}
+        return {
+            "data": {"deletehash": image_hash, "link": str(link)},
+            "success": True,
+            "status": 200,
+        }
 
     @api.delete(
         "/image/{image_hash}",
