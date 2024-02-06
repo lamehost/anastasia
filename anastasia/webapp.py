@@ -37,7 +37,7 @@ from fastapi.staticfiles import StaticFiles
 from anastasia.routers import v3_0
 from anastasia.settings import Settings
 
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 
 
 def create_app(api_mount_point: str = "/api/", settings: dict = False):
