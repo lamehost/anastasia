@@ -32,7 +32,8 @@ This module defines app wide settings
 
 import os
 
-from pydantic import BaseSettings, EmailStr
+from pydantic import EmailStr
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
