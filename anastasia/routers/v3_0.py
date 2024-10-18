@@ -31,7 +31,7 @@ import mimetypes
 import os
 import random
 import string
-from typing import TypedDict
+from typing_extensions import TypedDict
 
 from fastapi import APIRouter, File, HTTPException, Path, Request, UploadFile
 from fastapi.responses import FileResponse
