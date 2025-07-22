@@ -3,7 +3,7 @@ import os
 import tempfile
 from shutil import rmtree
 
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 
 from anastasia import create_app
 
@@ -36,8 +36,9 @@ class TestWebApp(unittest.IsolatedAsyncioTestCase):
         filename = os.path.join(os.path.dirname(__file__), 'image.gif')
 
         # Upload image
+        transport = ASGITransport(app=self.app)
         async with AsyncClient(
-            app=self.app, base_url="http://0.0.0.0:8080/api/3"
+            transport=transport, base_url="http://0.0.0.0:8080/api/3"
         ) as client:
             with open(filename, "rb") as image:
                 response = await client.post(
@@ -49,8 +50,9 @@ class TestWebApp(unittest.IsolatedAsyncioTestCase):
         filename = response.json()['data']['deletehash']
 
         # Get image
+        transport = ASGITransport(app=self.app)
         async with AsyncClient(
-            app=self.app, base_url="http://0.0.0.0:8080/api/3"
+            transport=transport, base_url="http://0.0.0.0:8080/api/3"
         ) as client:
             response = await client.get(
                 f'/image/{filename}'
@@ -58,8 +60,9 @@ class TestWebApp(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code,  200)
 
         # Delete image
+        transport = ASGITransport(app=self.app)
         async with AsyncClient(
-            app=self.app, base_url="http://0.0.0.0:8080/api/3"
+            transport=transport, base_url="http://0.0.0.0:8080/api/3"
         ) as client:
             response = await client.delete(
                 f'/image/{filename}'
@@ -71,8 +74,9 @@ class TestWebApp(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(response.status_code,  404)
 
         # Get non existing image
+        transport = ASGITransport(app=self.app)
         async with AsyncClient(
-            app=self.app, base_url="http://0.0.0.0:8080/api/3"
+            transport=transport, base_url="http://0.0.0.0:8080/api/3"
         ) as client:
             response = await client.get(
                 f'/image/{filename}'
