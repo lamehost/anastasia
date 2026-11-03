@@ -38,7 +38,7 @@ from fastapi.responses import FileResponse
 from pydantic import AnyHttpUrl, BaseModel, Field
 
 # Input Validation
-IMAGEHASH = Path(description="Image hash string", min_lentgh=1, max_length=64)
+IMAGEHASH = Path(description="Image hash string", min_length=1, max_length=64)
 
 
 # Response Schemas
